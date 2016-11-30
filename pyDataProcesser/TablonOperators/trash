@@ -1,0 +1,762 @@
+
+
+
+def control_input_deprecated(input_vars, possible_output_vars):
+    """There are different possibilities and combinations.
+    It could happen that:
+        - [lack_vars]: There are input_vars which are not in
+        possible_output_vars. They will be filtered out, and display a warning.
+        Sure a warning here?
+        - [absent_vars] There are possible_output_vars which are not in
+        input_vars. They will be avoided, and display a warning.
+        - [intersected_vars]: There are input_vars which are also in
+        possible_vars. These ones are the ones will be returned.
+
+    """
+    # TODO: syslog or sysmessage
+
+    # 1. Calculation of the list of all possibilities.
+    intersected_vars = [e for e in possible_output_vars if e in input_vars]
+    lack_vars = [e for e in input_vars if e not in possible_output_vars]
+    absent_vars = [e for e in possible_output_vars if e not in input_vars]
+
+    # 2. Message displaying
+    if absent_vars:
+        # TODO: syslog or sysmessage
+        msg = "WARNING: The following variables we want to filter are not"
+        msg += " in the dataframe you want to be filtered: "
+        for e in absent_vars:
+            msg = msg + e + ", "
+        msg = msg[:-2]
+        print(msg)
+    return intersected_vars, lack_vars, absent_vars
+    
+# There are different options we want to include.
+        # no warning, warning, raise exception
+        # ordered by input order, ordered by expected output order.    
+
+'''
+    
+    # DataDictObject
+        lackvars    = [ e for e in filteringdict.keys() if e not in columns]
+        if lackvars:
+            message = "WARNING: The following variables we want to filter are alredy not in the dataframe you want to be filtered: "
+            for e in lackvars:
+                message = message + e + ", "
+            message = message[:-2]
+            print(message)  
+
+            
+    # TablonEncoder
+        var_intersected = [val for val in orderedvars if val in columns ]
+        lackvars        = [var for var in orderedvars if var not in var_intersected]
+        if lackvars:
+            message = "WARNING: The following variables we want to filter are not in the dataframe you want to filter: "
+            for e in lackvars:
+                message = message + e + ", "
+            message = message[:-2]
+            print(message)
+        orderedvars = var_intersected
+
+        
+    # TablonLoader
+        if self.leadratingvars:
+            intersectvars   = [ e for e in columns and e     in self.leadratingvars]
+            nonintersectvars= [ e for e in columns and e not in self.leadratingvars]
+            if nonintersectvars:
+                message = "WARNING: The variables " + str(nonintersectvars) + ""
+                print(message)
+                
+'''
+
+### DataDictObject
+## 2016/11/22
+###############################################################################
+###############################################################################
+###############################################################################
+######################## Deal with the different types of inputs. ##############################
+
+    # Probably a deprecated code.
+        # WTF is this and why it is created
+    def build_transformationdict(self, i, notrawtrans = True):
+        types = [ e[2] for e in self.transformationtuples_list_raw[i] ]
+        flag = True
+        for e in types:
+            if e not in ['general']:  # i think codification could not enter TODO:
+                flag = False
+                break
+        if not flag:
+            return {}
+        
+        transdict = {}
+        for e in transformationtuples_list_raw[i]:
+            for i in range(len(e[0])):
+                if notrawtrans:
+                    transdict[e[0][i]] = TransformationFunction(e[0][i],e[1][i],'general',e[3])
+                else:
+                    transdict[e[0][i]] = e[3]
+        return transdict
+
+
+    def add_expansiondict(self,expansiondict):
+        ''' This function adds to the list of expansion list the new ones.
+        '''
+        #TODO: Deprecate
+        if not type(expansiondict) == dict:
+            message = "WARNING: The expansiondict used do not have the correct structure. It is not a dictionary"
+            raise Exception(message)
+        # Ensure coherence?
+        # deleting the previous ones 
+        self.expansiondict_list.append(expansiondict)
+        
+        ''' TODO: The possibility to accept 3 different type of encoderlist values in the dict: String, simple function or Instance of Encoder.
+            It needs the power to homogenize to a dict of { variable: instantiation}. '''
+    
+''' 
+        ### Instantiation protocol:
+        # The actual encoderDict has to have the instantiation of the encoder in each values.
+        # The fabrication of the encoderdict using the input with strings.
+        if str(np.array(encoderdict.values()).dtype) == 'object':   # OJOOOOOOOO!!!!! Esto puede ser que sea sin ser tipo Encoder. Sea raw function que necesita ser encapsulada por encoder. 
+            # TODO: Solution is another option in the if and implementation of the __str__ function for the Encoder.
+            self.encoderdict = encoderdict
+            self.encoderlist = encoderdict.values()
+            self.varslist    = encoderdict.keys()
+        elif '|S' in str(np.array(encoderdict.values()).dtype):
+            try:
+                self.encoderlist = [ Encoder(e, encoderdict[e])  for e in encoderdict ]
+                self.varslist    = encoderdict.keys()
+                self.encoderdict = dict(zip(encoderdict.keys(), self.encoderlist))
+            except:
+                raise Exception("Problems with the input encoderdict. Revise the data given for performing the encoding of the data.\n Probably different types of values in the instructions of encoding.")
+        else:
+            raise Exception("Problems with the input encoderdict.")     
+'''     
+
+###############################################################################
+###############################################################################
+
+### TablonEncoder
+## 2016/11/22
+###############################################################################
+###############################################################################
+###############################################################################
+
+### trash code ####
+
+
+    def decode(self, matrix, dataframe):
+        ''' Given a matrix of data returned by this encoder and the dataframe in which you want to incorporate it returns a dataframe. Completely useless...        
+        '''
+        # raise error when no coincident.
+        # De momento:
+        return dataframe
+
+
+#   def filter(self,dataframe,orderedvars):
+        ''' Given a dataframe and a list of ordered variables that the final dataframe is expected to have but it is not compulsary to have.
+            There will keep the variables that the initial dataframe share with the list of orderedvars in the order that this list specifies.
+        '''
+''' 
+        # Control if the variables we want to encode are in the dataframe given
+        columns = list(dataframe.columns)
+        intersectvars = control_input(columns, orderedvars)
+        
+        # Filter:
+        dataframe = dataframe[intersectvars]    
+        return dataframe
+'''
+
+
+'''     Matrix = []
+        for e in self.encoderlist:
+            matrixarray = e.encode(dataframe)
+            ### DEBUG
+            message = str(e.variablename) + '    ' + str(e.output_variablenames) + " with shape " + str(matrixarray.shape)
+            print(message)
+            Matrix.append(matrixarray)
+            outputvars = e.output_variablenames
+            self.output_variables = self.output_variables + outputvars
+            # There is an assumption that from a label vars it is output label vars and from matrixvars it is output matrixvars.
+            self.output_usevars = self.output_usevars + len(outputvars) * [ self.usedatadict[e.variablename]]
+            
+
+        
+        # Compute the Matrixindex and the labelindex lists for the "horizontal" splitting of the data:
+        matrixindex = [i for i in range(len(self.output_usevars))       if self.output_usevars[i] == 'var']
+        labelindex  = [i for i in range(len(self.output_usevars))       if self.output_usevars[i] == 'label']       
+
+        
+        
+        # OJO: The elements of Matrix need to be column matrices.
+        # OJO: Control the shapes. They can cause a problem with datasets with more variables than instances !!!
+        nrowref = Matrix[0].shape[0]
+        for i in range(len(Matrix)):
+            if not Matrix[i].shape[0] == nrowref:
+                message = "Error: Different row sizes in . Possible conflictive variable detected is the output variable " + self.output_variables[i]
+                raise Exception(message)
+            if not Matrix[i].shape[0] > Matrix[i].shape[1]:
+                message = "Error: There are variables which are not output as column matrix. Detected case in the variable " + self.output_variables[i]
+                raise Exception(message)
+        
+            
+        Matrix = np.concatenate(Matrix, axis = 1)
+
+        
+        self.output_variables = [list(np.array(self.output_variables)[matrixindex]),list(np.array(self.output_variables)[labelindex])]
+        
+        TablonMatrix    = Matrix[:,np.array(matrixindex)]
+        LabelMatrix     = Matrix[:,np.array(labelindex)]
+
+#       TablonMatrix  = []
+#       for i in matrixindex:
+#           TablonMatrix.append(Matrix[i])
+#       TablonMatrix = np.concatenate(TablonMatrix,axis=1)
+        
+#       LabelMatrix = []
+#       for i in labelindex:
+#           LabelMatrix.append(Matrix[i])
+#       LabelMatrix = np.concatenate(LabelMatrix,axis=1)
+'''
+
+'''     # part of the main function DEPRECATED
+        #TODEPRECATE
+
+        # TODO:
+        # 1. Obtain a typevariable post-transformation
+        # 2. Transform
+        # 3. Split
+
+
+        # 1. Control if the variables we want to encode are in the dataframe given 
+        columns = list(dataframe.columns)
+        totalvars = self.usedvars + self.labelvars
+        # TODO: possible control function: improve this function
+        intersectvars = control_function(input_vars = columns, possible_output_vars = totalvars)        
+        
+        
+        ## Different assumptions:
+        # The non-appeared variables in the dict doesn't affect. 
+
+        # 2. Split dataframe (warning, errors could happen. We need to use a filtering process in which there are a dataframe.columns and the usedvars and labelvars) 
+        vardataframe    = dataframe[self.usedvars]
+        labeldataframe  = dataframe[self.labelvars]
+
+        # 3. Transform dataframes
+        # TODO: Do it before the split could be better isn't it??
+        for i in range(len(encoderdictobject.transformationdict_list)):
+            pieces = []
+            for e in encoderdictobject.transformationdict_list[i]:
+                pieces.append(encoderdictobject.transformationdict_list[i][e].apply(vardataframe))
+            vardataframe = concat(pieces, axis=1)
+
+        for i in range(len(encoderdictobject.transformationdict_list)):
+            pieces = []
+            for e in encoderdictobject.transformationdict_list[i]:
+                pieces.append(encoderdictobject.transformationdict_list[i][e].apply(labeldataframe))
+            labeldataframe = concat(pieces, axis=1)
+
+
+        # 4. Format in the expected output specified.
+        TablonDf    = self.filter(vardataframe, [ for e in orderedvars if e not in self.labelvars])
+        LabelDf     = labeldataframe
+
+        # 5. Building the memory
+        outputvars = list(TablonDf.columns)+list(LabelDf.columns)
+        self.memory.append((columns,outputvars))
+'''
+###############################################################################
+###############################################################################
+
+
+### TablonReader
+## 2016/11/22
+###############################################################################
+###############################################################################
+###############################################################################
+"""
+TablonReader
+------------
+This module contains the summarizing class of the parsing task.
+
+"""
+
+
+#import csv
+import os
+import pandas as pd
+
+#from TransformationFunction import *
+#from DataDictObject import *
+#import numpy as np
+
+
+class TablonReader:
+    """It is a class which encapsulates the operation of parse a same
+    structured datasets. The main function of this class is self.parse.
+    In this class will transform a filename with its file path to a dataframe
+    structure of python pandas package.
+    It is done in order to be used more than one time with different files.
+    In order to do this it is saved a memory of the input filepath and the
+    output variables.
+    It could happen that the files has different variables. The transformation
+    used will be only apply the datadictobject given for the transformation.
+    The different variables obtained will be stored in the memory.
+
+    """
+    processname = 'reader'
+
+    # TODO: ods support
+    # TODO: Automatic detection of delimiter
+    # TODO: File and properties class?
+
+    def __init__(self, parserdictobject='', extension='xlsx', delimiter=';',
+                 header=True):
+        """This class has as class attributes:
+            - File attributes: attributes which describes the properties of the
+              files given by this client.
+                * extension: the file type: {csv, xls, xlsx, ods, ...}
+                * delimiter: the type of separator if it is a csv or txt file.
+                             # In the future declare schema.
+                * header : is a boolean variable which specifies if the file
+                given has a specific header. If not it will write it.
+
+        """
+        ### TODO: Other type of files. By default: csv
+        ### header is also part of the file attributes
+        # File attributes:
+        self.extension = extension
+        self.delimiter = delimiter
+        self.header = header
+        # Transformations Object
+        if not parserdictobject:
+            self.parserdictobject = DataDictObject('parser')
+        else:
+            self.parserdictobject = parserdictobject
+        # Cumulative memory
+        self.memory = []    # [(filepath,[variables]),(...)...]
+
+###############################################################################
+#######################################     Extra inputs:       #####
+###############################################################################
+    def set_parserdict(self, parserdictobject):
+        ''' Set parserdict'''
+        self.parserdictobject = parserdictobject
+
+    def set_fileattributes(self, extension='xlsx', delimiter=';'):
+        self.delimiter = delimiter
+        self.extension = extension
+
+###############################################################################
+#######################################     PARSING:        #####
+###############################################################################
+    def apply(self, filename='', pathfile=''):
+        return self.parse(self, filename, pathfile)
+
+    def parse(self, filename='', pathfile=''):
+        """The main function of this class. It is a wrapper of functions which
+        parse.
+        """
+
+        ## 0. Control of inputs
+        # Control the file
+        if not filename:
+            message = "Not a filename input. Please, input a correct filename."
+            raise Exception(message)
+        # Creation of the filepath:
+        filepath = pathfile + filename
+        # Control existence of the file:
+        if not os.path.isfile(filepath):
+            message = "Not a file. I am not able to find the input file in the input path. Please, input a correct filename or pathfile."
+            raise Exception(message)
+        # Control the file is agree with the file attributes specified.  #TODO: delimiter check
+        extension = filename.split('.')[1]
+        if extension != self.extension:
+            message = "WARNING: The file you want to parse is not the specified extension. This property will be reset."
+            print(message)
+            self.extension = extension
+
+        ## 1. Ensure header
+        # Write a header if it is not header
+        # TODO: Prepend header in each type of files.
+        # TODO: Correct for filepath
+        if not self.header:
+            self.write_header(filename, pathfile, extension)
+
+        ## 2. Parse the file with specific extension.
+        if self.extension == 'xlsx':
+            dataframe = self.parse_xlsx(filepath)
+        #TODO: More support to other type of files. All need to be xlsx until now.
+
+        ## 3. Put in memory
+        columns = list(dataframe.columns)
+        self.memory.append((filepath, columns))
+
+        return dataframe
+
+
+###############################################################################
+#######################################     TRANSFORM DATAFRAME:        #####
+###############################################################################
+    def transformation(self, dataframe, parserdictobject=''):  # TO TEST
+        """Returns the dataframe with expansions, filtering and ordering,
+        returning the dataframe we want.
+        """
+
+        ## 1. Create an alternative parsing class..
+        if not parserdictobject:
+            parserdictobject = self.parserdictobject
+
+        ## 2. Call the functions transform
+        dataframe_tuple = parserdictobject.transform_dataframe(dataframe)
+
+        ## 3. Ensure dataframe output.
+        if type(dataframe_tuple)==tuple:
+            dataframe = dataframe_tuple[0]
+
+        return dataframe
+
+
+###############################################################################
+###############################################################################
+########################   THESE HAS TO BE RECOVERED   ########################
+###############################################################################
+###############################################################################
+    def set_fileidentity(self,filename='',pathfile = ''):
+        ''' Set properties a posteriori.'''
+        if filename != '':
+            self.filename   = filename
+
+        if pathfile != '':
+            self.pathfile   = pathfile
+            
+        # QUESTION: Think about this attributes. 
+        # READ variables
+        if pathfile != '' and filename != '':
+            self.variables = parse_header(filename)   ## TODO: You have to input the whole path when this functionality it is implemented.
+        if not self.allvariables:
+            self.allvariables = self.variables
+        self.delimiter = ';'
+
+
+
+#############################################################################################################################################################
+#############################################################################################################################################################
+###############################################################   THESE HAS TO DIE   ########################################################################
+#############################################################################################################################################################
+#############################################################################################################################################################
+    def general_nullvalue_treatment(self,dataframe,to_operate = True, dictionaryfornulls={}):
+        '''General transformation for nulls values. It not consider individual treatment for any variable. TODO: Individual treatment for each variable.'''
+    
+        if to_operate and not dictionaryfornulls:
+            dataframe = dataframe.replace('\N','')
+            return dataframe
+        elif not to_operate:
+            return dataframe
+        elif to_operate and dictionaryfornulls:
+            for e in dictionaryfornulls:
+                dataframe = dataframe.replace(e,dictionaryfornulls[e])
+            return dataframe
+        else:
+            return dataframe
+
+
+############ TODO ADAPT to other ###########
+class ParserFunction:
+    ''' Functions to transform the data in the moment to be parsed.'''
+    def __init__(self,nameparser,parsingsnullstrategy = 'normal'):
+        ''' TODO: Incorporate other variables, as format needed to parse a date ..., reference values as deliver date.'''
+        ''' TODO: Possibility to use external function'''
+        self.parser = nameparser
+        self.parsingsnullstrategy = parsingsnullstrategy
+        
+        
+        # No sabia donde ponerla.
+        self.deliverday = datetime.datetime.strptime("16/06/2014", "%d/%m/%Y")
+        
+    def applyparser(self,text):
+        ''' Function which parse each element of each column in order to return an object with the class and value wanted'''
+        
+        
+        # Missing values parsing strategy.
+        if self.parsingsnullstrategy == 'normal':
+            if text == '\\N':
+                return ''
+
+        # Parsing functions.
+        if self.parser == 'specialbool_NetSales':
+            '''It has special characters which has to be converted to TRUE and FALSE'''
+            if text == '\x01':
+                return 'TRUE'
+            else:
+                return 'FALSE'
+
+        elif self.parser == 'gender_NetSales':
+            ''' It has the case of enumerate MALE, FEMALE. '''
+            if len(text)>10:
+                return 'BOTH'
+            return text
+            
+        elif self.parser == 'timefrom_NetSales':
+            if text =='':
+                return 0
+            else:
+            # TODO: deliverdate has to be out of here.
+                day = datetime.datetime.strptime(text, "%d/%m/%Y")
+                delta = (self.deliverday-day).days
+                return 1./float(1+delta)
+                
+        elif self.parser == 'nameDomain_NetSales':
+            domain = text.split('.')
+            return domain[0]
+        
+        elif self.parser == 'enum2list':
+            if text == '':
+                return []
+            text = text.lower()
+            text = text.replace('\\N','')
+            text = text.replace('\n','')
+            text = text.replace(' ','')
+            return list(text.split(','))
+    
+        elif self.parser == '':
+            return text
+
+#   def reformat(self, filename, pathfile = '' , delimiter='')
+#       ''' Parse the file as it was specified for this client, transform and encode in order to get two analytic matrix: VariableMatrix and LabelMatrix'''
+        
+#       if self.pathfile:
+#           os.chdir(pathfile)
+        # TODO:
+        # Use the parser
+        # Use the transformation
+        # Use the encode
+
+#class VariableDescriptions:
+''' Structure for deal with the variable options needed to process the data through this module.'''
+    
+#   def __init__(self, MacroDict, optionlist = []):
+    
+#       if not optionlist:
+#           optionlist = [ '' ,...] # TODO: Fill this list.
+            
+    
+#   def compute_parserdict(self,MacroDict,optionlist):
+#       self.parserdict
+    
+#   def compute_expansiondict(self,MacroDict,optionlist):
+#       self.expansiondict
+
+#   def compute_transformationdict(self,MacroDict,optionlist):
+#       self.transformationdict
+    
+# Possible improvements:
+# syslog    
+
+
+#   def transformation(self, dataframe, parserdictobject = '', variablelist = '' , usingthefirst = True): # TO TEST
+''' Returns the dataframe with expansions, filtering and ordering, returning the dataframe we want. '''
+                
+'''             
+        if not parserdictobject:
+            parserdictobject = self.parserdictobject
+            
+        if usingthefirst:
+            transformation_list = parserdictobject.transformationtuples_list
+        elif usingthefirst and len(parserdictobject.transformationtuples_list) > 0:
+            transformation_list = parserdictobject.transformationtuples_list[1:]
+
+        filteringdict       = parserdictobject.filteringdict
+
+        # 1. Create an alternative parsing class and use it usingthefirst or not.
+        # 2. Call the functions transform 
+        
+
+        # parsing
+        if transformation_list:
+            for phase in transformation_list:
+                for transfunct in phase:
+                    dataframe[transfunct.output_variable_list] = transfunct.apply(dataframe[transfunct.input_variable_list])
+                #dataframe = self.parse_dataframe(dataframe, parserdict)
+        
+        
+        # expansion 
+#       if expansiondict_list:
+#           for expansiondict in expansiondict_list:
+#               dataframe = self.expand(dataframe, expansiondict)
+        
+        
+        # filter using list of variablelist
+        if variablelist:
+            dataframe = self.filter(dataframe, variablelist)
+        # filter with dictionary
+        
+        columns = list(dataframe.columns)
+        if filteringdict:
+            # creation of the corrected_filteringdict: which has the variables we want to keep, and the name of their new names.
+            filtered_vars_list = [ e for e in filteringdict.keys() if filteringdict[e] == '']
+            
+            corrected_filteringdict = filteringdict
+            for e in filtered_vars_list:
+                del corrected_filteringdict[e]
+
+            # todo: remove 4ever
+            #oldvars = [ e for e in columns if e not in filteringdict.keys()]
+            #for e in oldvars:
+            #   corrected_filteringdict[e] = e
+            
+            dataframe = self.filter(dataframe, corrected_filteringdict.keys())
+            #dataframe.columns = corrected_filteringdict.values()
+            
+            dataframe = self.filter(dataframe, filteringdict, parserdictobject.ordervars)
+
+        return dataframe        
+'''     
+        
+#   def filter(self,dataframe, filtering, ordervars = []):
+''' There are different possible ways to indicate the way of filtering that this function accepts. The possible filtering element is:
+                * dict: the dict option has the structure {varname: newvarname}. If the newvarname is '' this variable is filtered. 
+                        If a given variable not appears, it is considered that it will be not renamed but it will not be filtered. 
+                * list: there is the list of final variables we want. 
+    
+            Returns the dataframe filtered and renamed.
+'''
+
+'''
+        # We have to deal with the possibility to not having variables we want to filter in the dataframe.
+        #Intersection between two list.
+        columns = list(dataframe.columns)
+        if type(filtering) == list:
+            variablelist = filtering
+            var_intersected = [val for val in variablelist if val in columns ]
+            lackvars = [var for var in variablelist if var not in var_intersected]
+            corrected_filteringdict = dict(zip(var_intersected,var_intersected))            
+            
+        elif type(filtering) == dict:
+            filteringdict = filtering
+            corrected_filteringdict = filteringdict
+            # delete the ones which will be filtered:
+            filtered_vars_list = [ e for e in filteringdict.keys() if filteringdict[e] == '']
+            for e in filtered_vars_list:
+                del corrected_filteringdict[e]
+            # add the ones of the dataframe
+            oldvars = [ e for e in columns if e not in filteringdict.keys()]
+            lackvars = [e for e in filteringdict.keys() if e not in columns]
+            for e in oldvars:
+                corrected_filteringdict[e] = e
+            
+    
+        # Alert for the vars given that there are not in the dataframe. 
+        if lackvars:
+            message = "WARNING: The following variables we want to filter are alredy not in the dataframe you want to be filtered: "
+            for e in lackvars:
+                message = message + e + ", "
+            message = message[:-2]
+            print(message)
+            
+                    
+        # Filter:
+        dataframe = dataframe[corrected_filteringdict.keys()]
+        
+        # Rename
+        dataframe.columns = corrected_filteringdict.values()
+        
+        # Reorder
+        if ordervars:
+            dataframe = dataframe[ordervars]
+        
+        return dataframe
+'''
+###############################################################################
+###############################################################################
+
+
+
+### TablonLoad
+## 2016/11/22
+###############################################################################
+###############################################################################
+###############################################################################
+###########################################################
+############## PROBABLY DEPRECATED CODE ###################
+###########################################################
+def write_file(filepath, urls, path_templates):
+    """This function has the goal of writing a script which process the loadin
+    to the database.
+    """
+    # TODO: factorize the hardcoded filenames.
+
+    file = open(path_templates + 'parallel_urls.txt', "r")
+    filecode = file.read()
+    file.close()
+    filetext = Template(filecode).safe_substitute(urls=str(urls))
+
+    open(filepath + 'parallel_urls.py', 'w').close()
+    f = open(filepath + 'parallel_urls.py', 'r+')
+    f.write(filetext)
+
+'''
+# TODO: global i is a problem. How to do it.
+def load_process(self, urls):
+    print "Total: " + str(len(urls))
+    j = 0
+    while j < len(urls):
+        p = Pool(1)
+        it = p.imap(self.f, urls[j:])
+        while True:
+            j = j + 1
+            self.i = j
+            print str(j)
+            print >> sys.stderr, str(j)
+            try:
+                #it.next(timeout=10)
+                it.next()
+            except multiprocessing.TimeoutError:
+                print >> sys.stderr, "TimeoutError"
+                break
+def f(self, url):
+    #global i
+    self.i = self.i + 1
+    print >> sys.stderr, str(i)
+    print str(i)
+    ini = datetime.datetime.now()
+    print "Started url"
+    #res = urllib2.urlopen(url).read()
+    res = urllib.urlopen(url).read()
+    print res
+    print >> sys.stderr, res
+    print "Done in " + str(datetime.datetime.now() - ini) + " seconds"
+    print ""
+    print >> sys.stderr, "Done in " + str(datetime.datetime.now() - ini) + " seconds"
+    print >> sys.stderr, ""
+    #time.sleep(0.5)
+    return res
+
+'''
+
+#   def lr_url_generator(self, dataframe, dictionary = '', aggregator = ''):
+''' This function creates a list of urls in order to do the queries to the LeadRating API.
+'''
+'''
+    # TODO: vigilar que no haya ningun "&" en ningun valor del dataframe ni en el nombre de las variables.
+        if not aggregator:
+            aggregator = "&"
+
+        if self.dictionary == "":
+            varss = list(dataframe.columns)
+            self.dictionary = dict(zip(vars,vars))
+
+        m,n = dataframe.shape
+
+        urls = []
+        for i in range(m):
+            apiquery = root + key
+            for var in self.dictionary:
+                apiquery = aggregator + apiquery + var + "=" dataframe.iloc[i][self.dictionary[var]]
+            apiquery = apiquery[:-1]
+            urls.append(apiquery)
+
+        return urls
+'''
+###############################################################################
+###############################################################################
+###############################################################################
